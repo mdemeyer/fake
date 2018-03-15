@@ -51,12 +51,14 @@ int main(int ac, char** av)
     auto print_output_task = [&counter, &coutMutex](auto time) {
         while(!counter.finished())
         {
-            auto t = counter.get();
+            auto progress = counter.get();
+
+            std::stringstream output;
+            output << "[" << std::setw(3) << std::right << progress  << "%] "
+                   << "Building CXX object CMakeFiles/fake.dir/src/main.cpp.o";
 
             if(coutMutex.try_lock()) {
-                std::cout << "[" << std::setw(3) << std::right << t  << "%] "
-                          << "Building CXX object CMakeFiles/" << "fake name" << ".dir/src/main.cpp.o"
-                          << std::endl;
+                std::cout << output.str() << std::endl;
                 coutMutex.unlock();
             }
 
