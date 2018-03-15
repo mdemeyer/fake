@@ -7,6 +7,7 @@
 
 #include <boost/program_options.hpp>
 
+#include "namegenerator.hpp"
 #include "progresscounter.hpp"
 
 using namespace std::chrono_literals;
@@ -49,13 +50,17 @@ int main(int ac, char** av)
     };
 
     auto print_output_task = [&counter, &coutMutex](auto time) {
+
+        auto name_gen = fake::NameGenerator();
+
         while(!counter.finished())
         {
             auto progress = counter.get();
+            auto next_name = name_gen.get_name();
 
             std::stringstream output;
             output << "[" << std::setw(3) << std::right << progress  << "%] "
-                   << "Building CXX object CMakeFiles/fake.dir/src/main.cpp.o";
+                   << "Building CXX object CMakeFiles/fake.dir/src/" << next_name << ".cpp.o";
 
             if(coutMutex.try_lock()) {
                 std::cout << output.str() << std::endl;
