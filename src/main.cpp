@@ -3,7 +3,6 @@
 #include <iomanip>
 #include <iostream>
 #include <mutex>
-#include <shared_mutex>
 #include <string>
 
 #include <boost/program_options.hpp>
@@ -37,7 +36,7 @@ int main(int ac, char** av)
     }
 
     fake::ProgressCounter counter;
-    std::shared_mutex coutMutex;
+    std::mutex coutMutex;
     std::vector<std::future<void>> output_futures;
     const int numTasks = vm["jobs"].as<int>();
 
@@ -54,11 +53,12 @@ int main(int ac, char** av)
         {
             auto t = counter.get();
 
-            std::unique_lock<std::shared_mutex> lock(coutMutex);
-            std::cout << "[" << std::setw(3) << std::right << t  << "%] "
-                      << "Building CXX object CMakeFiles/" << "fake name" << ".dir/src/main.cpp.o"
-                      << std::endl;
-            lock.unlock();
+            if(coutMutex.try_lock()) {
+                std::cout << "[" << std::setw(3) << std::right << t  << "%] "
+                          << "Building CXX object CMakeFiles/" << "fake name" << ".dir/src/main.cpp.o"
+                          << std::endl;
+                coutMutex.unlock();
+            }
 
             std::this_thread::sleep_for(time);
         }
