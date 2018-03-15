@@ -35,7 +35,7 @@ int main(int ac, char** av)
         return 1;
     }
 
-    fake::ProgressCounter counter;
+    fake::ProgressCounter<> counter;
     std::mutex coutMutex;
     std::vector<std::future<void>> output_futures;
     const int numTasks = vm["jobs"].as<int>();
