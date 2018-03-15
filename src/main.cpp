@@ -8,50 +8,13 @@
 
 #include <boost/program_options.hpp>
 
-class ProgressCounter
-{
-public:
-    constexpr explicit ProgressCounter(unsigned int endValue = 100) noexcept
-        : m_endValue(endValue)
-        , m_value(0)
-        , m_finished(false)
-    {}
+#include "progresscounter.hpp"
 
-    unsigned int get() const
-    {
-        std::shared_lock<std::shared_mutex> lock(m_mutex);
-        return m_value;
-    }
-
-    bool finished() const
-    {
-        std::shared_lock<std::shared_mutex> lock(m_mutex);
-        return m_finished;
-    }
-
-    void increment()
-    {
-        std::unique_lock<std::shared_mutex> lock(m_mutex);
-        unsigned int newValue = ++m_value;
-
-        if(newValue == m_endValue) {
-            m_finished = true;
-        }
-    }
-
-private:
-    mutable std::shared_mutex m_mutex;
-
-    const unsigned int m_endValue;
-
-    unsigned int m_value;
-    bool m_finished;
-};
+using namespace std::chrono_literals;
+namespace po = boost::program_options;
 
 int main(int ac, char** av)
 {
-    using namespace std::chrono_literals;
-    namespace po = boost::program_options;
 
     po::options_description desc("Fake options");
     desc.add_options()
@@ -73,7 +36,7 @@ int main(int ac, char** av)
         return 1;
     }
 
-    ProgressCounter counter;
+    fake::ProgressCounter counter;
     std::shared_mutex coutMutex;
     std::vector<std::future<void>> output_futures;
     const int numTasks = vm["jobs"].as<int>();
