@@ -1,4 +1,5 @@
 # fake
+[![Build Status](https://travis-ci.org/mdemeyer/fake.svg?branch=master)](https://travis-ci.org/mdemeyer/fake)
 
 Fake compiler output. Because reasons.
 
