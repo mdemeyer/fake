@@ -10,7 +10,7 @@ addons:
     sources:
       - ubuntu-toolchain-r-test
     packages:
-      - cmake_3.10
+      - cmake3_3.10
       - gcc-7
       - g++-7
       - libboost-program-options1.55-dev
