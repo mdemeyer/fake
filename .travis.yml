@@ -10,11 +10,17 @@ addons:
     sources:
       - ubuntu-toolchain-r-test
     packages:
-      - cmake3_3.10
       - gcc-7
       - g++-7
       - libboost-program-options1.55-dev
       - libboost-system1.55-dev
+
+before_install:
+    - mkdir cmake-download &&
+      cd cmake-download &&
+      curl -O https://cmake.org/files/v3.10/cmake-3.10.0-rc5-Linux-x86_64.sh &&
+      bash cmake-3.10.0-rc5-Linux-x86_64.sh --skip-license &&
+      cd ..
 
 script:
   - export CC=gcc-7
