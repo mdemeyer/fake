@@ -13,13 +13,18 @@
 using namespace std::chrono_literals;
 namespace po = boost::program_options;
 
-int main(int ac, char** av)
+namespace
 {
+
+auto read_options(int ac, char** av)
+{
+    bool valid = true;
+    int numTasks = 4;
 
     po::options_description desc("Fake options");
     desc.add_options()
             ("help", "produce help message")
-            ("jobs,j", po::value<int>()->default_value(4), "amount of parallel tasks");
+            ("jobs,j", po::value<int>()->default_value(numTasks), "amount of parallel tasks");
 
     po::variables_map vm;
 
@@ -28,18 +33,34 @@ int main(int ac, char** av)
         po::notify(vm);
     } catch (std::exception& e) {
         std::cerr << "Error: " << e.what() << "\n";
-        return 1;
+        valid = false;
     }
 
     if (vm.count("help")) {
         std::cout << desc << "\n";
+        valid = false;
+    }
+
+    if(valid) {
+        numTasks = vm["jobs"].as<int>();
+    }
+
+    return std::make_tuple(valid, numTasks);
+}
+
+}
+
+int main(int ac, char** av)
+{
+    const auto [ valid, numTasks ] = read_options(ac, av);
+
+    if(!valid) {
         return 1;
     }
 
     fake::ProgressCounter<> counter;
     std::mutex coutMutex;
     std::vector<std::future<void>> output_futures;
-    const int numTasks = vm["jobs"].as<int>();
 
     auto count_progress_task = [&counter]() {
         while(!counter.finished())
