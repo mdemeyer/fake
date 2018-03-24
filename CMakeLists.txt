@@ -13,6 +13,8 @@ find_package(Boost 1.55 REQUIRED
 add_executable(fake
     src/namegenerator.cpp
     src/namegenerator.hpp
+    src/parseoptions.cpp
+    src/parseoptions.hpp
     src/progresscounter.hpp
     src/main.cpp
     )
