@@ -12,9 +12,9 @@ addons:
     packages:
       - gcc-7
       - g++-7
-      - libboost-program-options-dev
-      - libboost-system-dev
-      - libgtest-dev
+      - libboost-program-options-dev1.55
+      - libboost-system-dev1.55
+      - libgtest-dev_1.7
 
 script:
   - export CC=gcc-7
