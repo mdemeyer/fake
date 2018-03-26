@@ -5,41 +5,23 @@
 #include <mutex>
 #include <string>
 
-#include <boost/program_options.hpp>
-
 #include "namegenerator.hpp"
+#include "parseoptions.hpp"
 #include "progresscounter.hpp"
 
 using namespace std::chrono_literals;
-namespace po = boost::program_options;
 
 int main(int ac, char** av)
 {
+    const auto [ valid, numTasks ] = fake::read_options(ac, av);
 
-    po::options_description desc("Fake options");
-    desc.add_options()
-            ("help", "produce help message")
-            ("jobs,j", po::value<int>()->default_value(4), "amount of parallel tasks");
-
-    po::variables_map vm;
-
-    try {
-        po::store(po::parse_command_line(ac, av, desc), vm);
-        po::notify(vm);
-    } catch (std::exception& e) {
-        std::cerr << "Error: " << e.what() << "\n";
-        return 1;
-    }
-
-    if (vm.count("help")) {
-        std::cout << desc << "\n";
+    if(!valid) {
         return 1;
     }
 
     fake::ProgressCounter<> counter;
     std::mutex coutMutex;
     std::vector<std::future<void>> output_futures;
-    const int numTasks = vm["jobs"].as<int>();
 
     auto count_progress_task = [&counter]() {
         while(!counter.finished())
